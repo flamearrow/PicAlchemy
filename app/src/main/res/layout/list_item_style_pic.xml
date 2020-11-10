@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:onClick="@{onClickListener}"
             android:scaleType="centerCrop"
-            app:imageFromUri="@{uri}" />
+            app:bindStyleImage="@{uri}" />
     </androidx.cardview.widget.CardView>
 
 </layout>

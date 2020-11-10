@@ -21,7 +21,7 @@ class StyleListAdapter : ListAdapter<Uri, StyleViewHolder>(StyleDiffCallback()) 
     }
 }
 
-class StyleViewHolder(val binding: ListItemStylePicBinding) :
+class StyleViewHolder(private val binding: ListItemStylePicBinding) :
     RecyclerView.ViewHolder(binding.root) {
     init {
         binding.setOnClickListener {
@@ -40,7 +40,6 @@ class StyleViewHolder(val binding: ListItemStylePicBinding) :
     }
 }
 
-// wtf is this?
 class StyleDiffCallback : DiffUtil.ItemCallback<Uri>() {
     override fun areItemsTheSame(oldItem: Uri, newItem: Uri): Boolean {
         return oldItem == newItem
