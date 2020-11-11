@@ -1,6 +1,7 @@
 package band.mlgb.picalchemy
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import band.mlgb.picalchemy.adapters.GalleryAdapter
@@ -15,13 +16,16 @@ class GalleryActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityGalleryBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        with(GalleryAdapter()) {
-            binding.gallery.adapter = this
-            viewMainActivity.imageUris.observe(this@GalleryActivity) {
-                submitList(it)
+        ActivityGalleryBinding.inflate(layoutInflater).let { binding ->
+            setContentView(binding.root)
+            with(GalleryAdapter()) {
+                binding.gallery.adapter = this
+                binding.setOnClickListener {
+                    debugBGLM("i got clicked, open camera and pick a picture")
+                }
+                viewMainActivity.imageUris.observe(this@GalleryActivity) {
+                    submitList(it)
+                }
             }
         }
 
