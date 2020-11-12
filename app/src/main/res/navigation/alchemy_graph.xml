@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/alchemy_graph"
+    app:startDestination="@id/gallery_fragment">
+
+
+    <fragment
+        android:id="@+id/gallery_fragment"
+        android:name="band.mlgb.picalchemy.GalleryFragment"
+        tools:layout="@layout/fragment_gallery">
+        <action
+            android:id="@+id/action_gallery_to_alchemy"
+            app:destination="@id/alchemy_fragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/alchemy_fragment"
+        android:name="band.mlgb.picalchemy.AlchemyFragment"
+        tools:layout="@layout/fragment_alchemy" />
+</navigation>

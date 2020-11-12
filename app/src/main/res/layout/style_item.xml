@@ -11,27 +11,26 @@
         <variable
             name="onClickListener"
             type="android.view.View.OnClickListener" />
+
     </data>
 
-    <band.mlgb.picalchemy.views.EqualWidthFrameLayout
+    <band.mlgb.picalchemy.views.EqualHeightFrameLayout
         android:layout_width="0dp"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        android:padding="2dp">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="2dp"
-            app:cardCornerRadius="5dp"
-            app:cardElevation="2dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="5dp">
 
             <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:contentDescription="@null"
                 android:onClick="@{onClickListener}"
-                app:bindGalleryImage="@{uri}" />
+                android:scaleType="centerCrop"
+                app:bindStyleImage="@{uri}" />
         </androidx.cardview.widget.CardView>
-
-    </band.mlgb.picalchemy.views.EqualWidthFrameLayout>
-
+    </band.mlgb.picalchemy.views.EqualHeightFrameLayout>
 </layout>

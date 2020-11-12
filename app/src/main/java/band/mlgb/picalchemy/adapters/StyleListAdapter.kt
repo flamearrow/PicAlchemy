@@ -6,14 +6,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import band.mlgb.picalchemy.databinding.ListItemStylePicBinding
+import band.mlgb.picalchemy.databinding.StyleItemBinding
 import band.mlgb.picalchemy.debugBGLM
 
 // The adapter will be expanded as user add new styles
 // Note the Adapter already accests a list of Uri as input
 class StyleListAdapter : ListAdapter<Uri, StyleViewHolder>(StyleDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StyleViewHolder {
-        return StyleViewHolder(ListItemStylePicBinding.inflate(LayoutInflater.from(parent.context)))
+        return StyleViewHolder(StyleItemBinding.inflate(LayoutInflater.from(parent.context)))
     }
 
     override fun onBindViewHolder(holder: StyleViewHolder, position: Int) {
@@ -21,11 +21,11 @@ class StyleListAdapter : ListAdapter<Uri, StyleViewHolder>(StyleDiffCallback()) 
     }
 }
 
-class StyleViewHolder(private val binding: ListItemStylePicBinding) :
+class StyleViewHolder(private val binding: StyleItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
     init {
         binding.setOnClickListener {
-            debugBGLM("I got clicked")
+            debugBGLM("I got clicked, " + binding.uri)
         }
     }
 

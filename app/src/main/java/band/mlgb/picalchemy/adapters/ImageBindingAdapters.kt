@@ -22,3 +22,11 @@ fun bindStyleImage(view: ImageView, uri: Uri) {
         .centerInside()
         .into(view)
 }
+
+@BindingAdapter("bindResultImage")
+fun bindResultImage(view: ImageView, uri: Uri) {
+    Glide.with(view.context)
+        .load(uri)
+        .centerCrop()
+        .into(view)
+}

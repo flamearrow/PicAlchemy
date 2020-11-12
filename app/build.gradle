@@ -60,6 +60,8 @@ dependencies {
 
     // livedata {} coroutine block to load livedata in background
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.1'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.1'
 
 
     kapt "com.github.bumptech.glide:compiler:$rootProject.glideVersion"

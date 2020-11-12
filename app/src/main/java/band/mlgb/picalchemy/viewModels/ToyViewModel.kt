@@ -1,20 +1,15 @@
 package band.mlgb.picalchemy.viewModels
 
-import android.content.ContentResolver
+import android.app.Application
 import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.liveData
+import androidx.lifecycle.*
 import band.mlgb.picalchemy.errBGLM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-// ViewModel using ContentProvider to access local images
-// use a suspend function to load from content provider and cursor
-class GalleryViewModel(private val contentResolver: ContentResolver) : ViewModel() {
+class ToyViewModel(app: Application) : AndroidViewModel(app) {
     val imageUris: LiveData<List<Uri>> = liveData {
         emit(loadImages())
     }
@@ -23,7 +18,8 @@ class GalleryViewModel(private val contentResolver: ContentResolver) : ViewModel
     // IO intensive function, to be called inside a coroutine
     // query the MediaStore, find all images with type image type and return them as a list of uris
     private fun fetchImages(): List<Uri> {
-        contentResolver.query(
+
+        getApplication<Application>().contentResolver.query(
             // this only returns image, if need video, add
             // MediaStore.Files
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -65,11 +61,11 @@ class GalleryViewModel(private val contentResolver: ContentResolver) : ViewModel
 
     companion object {
         fun providerFactory(
-            contentResolver: ContentResolver
+            app: Application
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return GalleryViewModel(contentResolver) as T
+                return GalleryViewModel(app.contentResolver) as T
             }
 
         }
