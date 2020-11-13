@@ -21,6 +21,10 @@ class StyleListViewModel(assets: AssetManager) : ViewModel() {
         }
     }
 
+    val selectedStyle: LiveData<Uri> by lazy {
+        MutableLiveData()
+    }
+
     companion object {
         fun providerFactory(
             assets: AssetManager

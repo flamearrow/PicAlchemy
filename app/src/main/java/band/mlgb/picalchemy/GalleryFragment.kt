@@ -17,7 +17,8 @@ import androidx.navigation.fragment.findNavController
 import band.mlgb.picalchemy.adapters.GalleryAdapter
 import band.mlgb.picalchemy.databinding.FragmentGalleryBinding
 import band.mlgb.picalchemy.viewModels.GalleryViewModel
-import band.mlgb.picalchemy.viewModels.InputImageViewModel
+import band.mlgb.picalchemy.viewModels.ImageViewModel
+import band.mlgb.picalchemy.views.UriPickedListener
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -32,7 +33,7 @@ class GalleryFragment : Fragment(), UriPickedListener {
         GalleryViewModel.providerFactory(requireActivity().contentResolver)
     }
 
-    private val inputImageViewModel: InputImageViewModel by activityViewModels()
+    private val inputImageViewModel: ImageViewModel by activityViewModels()
 
     private var uriByCamera: Uri? = null
 
@@ -41,7 +42,6 @@ class GalleryFragment : Fragment(), UriPickedListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         val binding = FragmentGalleryBinding.inflate(layoutInflater)
 
         with(GalleryAdapter(this)) {
@@ -113,13 +113,9 @@ class GalleryFragment : Fragment(), UriPickedListener {
         }
     }
 
-    override fun onUriPicked(uri: Uri) {
-        inputImageViewModel.imagePicked.postValue(uri)
+    override fun onUriPicked(photo: Uri) {
+        inputImageViewModel.image.postValue(photo)
         findNavController().navigate(R.id.action_gallery_to_alchemy)
 
     }
-}
-
-interface UriPickedListener {
-    fun onUriPicked(uri: Uri)
 }

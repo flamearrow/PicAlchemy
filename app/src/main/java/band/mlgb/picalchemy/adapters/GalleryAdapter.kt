@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import band.mlgb.picalchemy.UriPickedListener
 import band.mlgb.picalchemy.databinding.GalleryItemBinding
 import band.mlgb.picalchemy.debugBGLM
+import band.mlgb.picalchemy.views.UriPickedListener
 
 class GalleryAdapter(private val uriPickedListener: UriPickedListener) :
     ListAdapter<Uri, GalleryViewHolder>(GalleryDiffCallback()) {

@@ -5,13 +5,15 @@ buildscript {
         lifecycleVersion = "2.2.0"
         appCompatVersion = "1.2.0"
         glideVersion = '4.10.0'
+        tfl_version = "0.0.0-nightly"
     }
+
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.0"
+        classpath "com.android.tools.build:gradle:4.1.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
