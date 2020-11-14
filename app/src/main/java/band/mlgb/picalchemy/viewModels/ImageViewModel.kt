@@ -9,4 +9,11 @@ import androidx.lifecycle.MutableLiveData
 // representing image picked (from gallery or camera)
 class ImageViewModel(app: Application) : AndroidViewModel(app) {
     val image: MutableLiveData<Uri> = MutableLiveData()
+
+    // Repost the value to notify the observers
+    fun repostIfNotNull() {
+        image.value?.let {
+            image.postValue(it)
+        }
+    }
 }

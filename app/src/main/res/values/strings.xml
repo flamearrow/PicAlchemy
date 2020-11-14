@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PicAlchemy</string>
+    <string name="share_with">Share with…</string>
+    <string name="saved">Saved!</string>
+    <string name="no_styled_img">No styled image found, select a style first!</string>
+    <string name="save_failed">Failed to save image</string>
 </resources>

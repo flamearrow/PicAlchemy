@@ -13,10 +13,10 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 /**
- * Save Bitmap and return uri.
+ * Save Bitmap to internal file provider and return uri, it won't save to public gallery
  */
 fun bitmapToUri(inputImage: Bitmap, context: Context): Uri {
-    createTemporaryUri(context).also {
+    createInternalFileUri(context).also {
         FileOutputStream(it.absolutePath).use { fos ->
             inputImage.compress(Bitmap.CompressFormat.JPEG, 100, fos)
         }

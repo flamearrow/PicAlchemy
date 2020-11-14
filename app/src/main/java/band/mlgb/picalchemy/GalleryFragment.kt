@@ -14,7 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import band.mlgb.picalchemy.adapters.GalleryAdapter
 import band.mlgb.picalchemy.databinding.FragmentGalleryBinding
-import band.mlgb.picalchemy.utils.createTemporaryUri
+import band.mlgb.picalchemy.utils.createInternalFileUri
 import band.mlgb.picalchemy.viewModels.GalleryViewModel
 import band.mlgb.picalchemy.viewModels.ImageViewModel
 import band.mlgb.picalchemy.views.UriPickedListener
@@ -62,7 +62,7 @@ class GalleryFragment : Fragment(), UriPickedListener {
                 Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                     // Ensure that there's a camera activity to handle the intent
                     takePictureIntent.resolveActivity(packageManager)?.also {
-                        createTemporaryUri(activity).also {
+                        createInternalFileUri(activity).also {
                             uriByCamera = it.contentUri
                             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriByCamera)
                             startActivityForResult(
