@@ -3,7 +3,8 @@ package band.mlgb.picalchemy.tensorflow
 import android.content.Context
 import android.net.Uri
 import band.mlgb.picalchemy.utils.*
-import band.mlgb.picalchemy.viewModels.ImageViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.GpuDelegate
 import java.io.FileInputStream
@@ -42,40 +43,41 @@ class StyleTransferer(context: Context) {
         private const val STYLE_TRANSFER_FLOAT16_MODEL = "style_transfer_f16_384.tflite"
     }
 
-    fun transferStyle(
+    suspend fun transferStyle(
         styleUri: Uri,
         inputUri: Uri,
-        resultViewModel: ImageViewModel,
-        context: Context,
-    ) {
-        try {
-            val contentImage = uriToBitmap(inputUri, context)
-            val contentArray =
-                bitmapToByteBuffer(contentImage, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
-            val styleBitmap = uriToBitmap(styleUri, context)
-            val input =
-                bitmapToByteBuffer(styleBitmap, STYLE_IMAGE_SIZE, STYLE_IMAGE_SIZE)
+        context: Context
+    ): Uri? =
+        // daggerize with a signleThreadExecutor
+        withContext(Dispatchers.Default) {
+            try {
+                val contentImage = uriToBitmap(inputUri, context)
+                val contentArray =
+                    bitmapToByteBuffer(contentImage, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
+                val styleBitmap = uriToBitmap(styleUri, context)
+                val input =
+                    bitmapToByteBuffer(styleBitmap, STYLE_IMAGE_SIZE, STYLE_IMAGE_SIZE)
 
-            val inputsForPredict = arrayOf<Any>(input)
-            val outputsForPredict = HashMap<Int, Any>()
-            val styleBottleneck = Array(1) { Array(1) { Array(1) { FloatArray(BOTTLENECK_SIZE) } } }
-            outputsForPredict[0] = styleBottleneck
-            // The results of this inference could be reused given the style does not change
-            // That would be a good practice in case this was applied to a video stream.
-            interpreterPredict.runForMultipleInputsOutputs(inputsForPredict, outputsForPredict)
+                val inputsForPredict = arrayOf<Any>(input)
+                val outputsForPredict = HashMap<Int, Any>()
+                val styleBottleneck =
+                    Array(1) { Array(1) { Array(1) { FloatArray(BOTTLENECK_SIZE) } } }
+                outputsForPredict[0] = styleBottleneck
+                // The results of this inference could be reused given the style does not change
+                // That would be a good practice in case this was applied to a video stream.
+                interpreterPredict.runForMultipleInputsOutputs(inputsForPredict, outputsForPredict)
 
-            val inputsForStyleTransfer = arrayOf(contentArray, styleBottleneck)
-            val outputsForStyleTransfer = HashMap<Int, Any>()
-            val outputImage =
-                Array(1) { Array(CONTENT_IMAGE_SIZE) { Array(CONTENT_IMAGE_SIZE) { FloatArray(3) } } }
-            outputsForStyleTransfer[0] = outputImage
+                val inputsForStyleTransfer = arrayOf(contentArray, styleBottleneck)
+                val outputsForStyleTransfer = HashMap<Int, Any>()
+                val outputImage =
+                    Array(1) { Array(CONTENT_IMAGE_SIZE) { Array(CONTENT_IMAGE_SIZE) { FloatArray(3) } } }
+                outputsForStyleTransfer[0] = outputImage
 
-            interpreterTransform.runForMultipleInputsOutputs(
-                inputsForStyleTransfer,
-                outputsForStyleTransfer
-            )
-
-            resultViewModel.image.postValue(
+                interpreterTransform.runForMultipleInputsOutputs(
+                    inputsForStyleTransfer,
+                    outputsForStyleTransfer
+                )
+                debugBGLM("finished blocking on main")
                 bitmapToUri(
                     convertArrayToBitmap(
                         outputImage,
@@ -83,12 +85,11 @@ class StyleTransferer(context: Context) {
                         CONTENT_IMAGE_SIZE
                     ), context
                 )
-            )
-
-        } catch (e: Exception) {
-            errBGLM("something went wrong: ${e.message}")
+            } catch (e: Exception) {
+                errBGLM("something went wrong when running style transfer: ${e.message}")
+                null
+            }
         }
-    }
 
     @Throws(IOException::class)
     private fun loadModelFile(context: Context, modelFile: String): MappedByteBuffer {

@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import band.mlgb.picalchemy.adapters.StyleListAdapter
 import band.mlgb.picalchemy.databinding.FragmentAlchemyBinding
 import band.mlgb.picalchemy.tensorflow.StyleTransferer
+import band.mlgb.picalchemy.utils.debugBGLM
 import band.mlgb.picalchemy.viewModels.ImageViewModel
 import band.mlgb.picalchemy.viewModels.StyleListViewModel
 import band.mlgb.picalchemy.views.UriPickedListener
@@ -77,12 +78,19 @@ class AlchemyFragment : Fragment(), UriPickedListener {
             // input from camera: content://band.mlgb.picalchemy.fileprovider/my_images/Pictures/JPEG_20201113_163511_5835964646040696703.jpg
             // input from gallery: content://media/external/images/media/11525
             inputImageViewModel.viewModelScope.launch {
+                // TODO: change image to loading animation
+                // will start on a separate thread, main
                 styleTransferer.transferStyle(
                     styleFileUri,
                     inputContentUri,
-                    resultImageViewModel,
                     requireActivity(),
-                )
+                )?.let {
+                    debugBGLM("posting value on main")
+                    resultImageViewModel.image.postValue(it)
+                } ?: run {
+                    // reset original image
+                    inputImageViewModel.image.postValue(inputImageViewModel.image.value)
+                }
             }
         }
     }
