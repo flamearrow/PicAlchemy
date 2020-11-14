@@ -11,18 +11,16 @@ class StyleListViewModel(assets: AssetManager) : ViewModel() {
 
     val styleList: LiveData<List<Uri>> by lazy {
         MutableLiveData<List<Uri>>().apply {
-            assets.list("thumbnails")?.let {
-                var list = ArrayList<Uri>()
-                for (uriPath: String in it) {
-                    list.add(Uri.parse("file:///android_asset/thumbnails/$uriPath"))
-                }
-                postValue(list)
+            assets.list("thumbnails")?.let { styleFiles ->
+                postValue(
+                    ArrayList<Uri>().also {
+                        for (uriPath: String in styleFiles) {
+                            it.add(Uri.parse("file:///android_asset/thumbnails/$uriPath"))
+                        }
+                    }
+                )
             }
         }
-    }
-
-    val selectedStyle: LiveData<Uri> by lazy {
-        MutableLiveData()
     }
 
     companion object {

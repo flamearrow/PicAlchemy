@@ -5,7 +5,7 @@ import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.lifecycle.*
-import band.mlgb.picalchemy.errBGLM
+import band.mlgb.picalchemy.utils.errBGLM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

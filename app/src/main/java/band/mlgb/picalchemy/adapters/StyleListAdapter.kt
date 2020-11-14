@@ -7,12 +7,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import band.mlgb.picalchemy.databinding.StyleItemBinding
-import band.mlgb.picalchemy.debugBGLM
+import band.mlgb.picalchemy.utils.debugBGLM
 import band.mlgb.picalchemy.views.UriPickedListener
 
 // The adapter will be expanded as user add new styles
 // Note the Adapter already accests a list of Uri as input
-class StyleListAdapter(val uriPickedListener: UriPickedListener) :
+class StyleListAdapter(private val uriPickedListener: UriPickedListener) :
     ListAdapter<Uri, StyleViewHolder>(StyleDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StyleViewHolder {
         return StyleViewHolder(

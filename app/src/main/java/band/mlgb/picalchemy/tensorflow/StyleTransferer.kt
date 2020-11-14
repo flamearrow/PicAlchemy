@@ -2,14 +2,10 @@ package band.mlgb.picalchemy.tensorflow
 
 import android.content.Context
 import android.net.Uri
-import android.os.SystemClock
-import android.util.Log
-import band.mlgb.picalchemy.debugBGLM
-import band.mlgb.picalchemy.errBGLM
+import band.mlgb.picalchemy.utils.*
 import band.mlgb.picalchemy.viewModels.ImageViewModel
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.GpuDelegate
-import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
@@ -18,18 +14,13 @@ import java.nio.channels.FileChannel
 
 class StyleTransferer(context: Context) {
 
+    // TODO: useGPU when available
     private var useGPU: Boolean = false
     private var gpuDelegate: GpuDelegate? = null
     private var numberThreads = 4
 
     private val interpreterPredict: Interpreter
     private val interpreterTransform: Interpreter
-
-    private var fullExecutionTime = 0L
-    private var preProcessTime = 0L
-    private var stylePredictTime = 0L
-    private var styleTransferTime = 0L
-    private var postProcessTime = 0L
 
     init {
         if (useGPU) {
@@ -42,7 +33,6 @@ class StyleTransferer(context: Context) {
     }
 
     companion object {
-        private const val TAG = "StyleTransferMExec"
         private const val STYLE_IMAGE_SIZE = 256
         private const val CONTENT_IMAGE_SIZE = 384
         private const val BOTTLENECK_SIZE = 100
@@ -52,22 +42,17 @@ class StyleTransferer(context: Context) {
         private const val STYLE_TRANSFER_FLOAT16_MODEL = "style_transfer_f16_384.tflite"
     }
 
-    fun execute(
-        contentImagePath: String,
-        styleImageName: String,
-        context: Context
+    fun transferStyle(
+        styleUri: Uri,
+        inputUri: Uri,
+        resultViewModel: ImageViewModel,
+        context: Context,
     ) {
         try {
-            Log.i(TAG, "running models")
-
-            fullExecutionTime = SystemClock.uptimeMillis()
-            preProcessTime = SystemClock.uptimeMillis()
-
-            val contentImage = decodeBitmap(File(contentImagePath))
+            val contentImage = uriToBitmap(inputUri, context)
             val contentArray =
                 bitmapToByteBuffer(contentImage, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
-            val styleBitmap =
-                loadBitmapFromResources(context, "thumbnails/$styleImageName")
+            val styleBitmap = uriToBitmap(styleUri, context)
             val input =
                 bitmapToByteBuffer(styleBitmap, STYLE_IMAGE_SIZE, STYLE_IMAGE_SIZE)
 
@@ -75,14 +60,9 @@ class StyleTransferer(context: Context) {
             val outputsForPredict = HashMap<Int, Any>()
             val styleBottleneck = Array(1) { Array(1) { Array(1) { FloatArray(BOTTLENECK_SIZE) } } }
             outputsForPredict[0] = styleBottleneck
-            preProcessTime = SystemClock.uptimeMillis() - preProcessTime
-
-            stylePredictTime = SystemClock.uptimeMillis()
             // The results of this inference could be reused given the style does not change
             // That would be a good practice in case this was applied to a video stream.
             interpreterPredict.runForMultipleInputsOutputs(inputsForPredict, outputsForPredict)
-            stylePredictTime = SystemClock.uptimeMillis() - stylePredictTime
-            Log.d(TAG, "Style Predict Time to run: $stylePredictTime")
 
             val inputsForStyleTransfer = arrayOf(contentArray, styleBottleneck)
             val outputsForStyleTransfer = HashMap<Int, Any>()
@@ -90,43 +70,23 @@ class StyleTransferer(context: Context) {
                 Array(1) { Array(CONTENT_IMAGE_SIZE) { Array(CONTENT_IMAGE_SIZE) { FloatArray(3) } } }
             outputsForStyleTransfer[0] = outputImage
 
-            styleTransferTime = SystemClock.uptimeMillis()
             interpreterTransform.runForMultipleInputsOutputs(
                 inputsForStyleTransfer,
                 outputsForStyleTransfer
             )
-            styleTransferTime = SystemClock.uptimeMillis() - styleTransferTime
-            Log.d(TAG, "Style apply Time to run: $styleTransferTime")
 
-            postProcessTime = SystemClock.uptimeMillis()
-            var styledImage =
-                convertArrayToBitmap(outputImage, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
-            postProcessTime = SystemClock.uptimeMillis() - postProcessTime
+            resultViewModel.image.postValue(
+                bitmapToUri(
+                    convertArrayToBitmap(
+                        outputImage,
+                        CONTENT_IMAGE_SIZE,
+                        CONTENT_IMAGE_SIZE
+                    ), context
+                )
+            )
 
-            fullExecutionTime = SystemClock.uptimeMillis() - fullExecutionTime
-            Log.d(TAG, "Time to run everything: $fullExecutionTime")
-
-//            return ModelExecutionResult(
-//                styledImage,
-//                preProcessTime,
-//                stylePredictTime,
-//                styleTransferTime,
-//                postProcessTime,
-//                fullExecutionTime,
-//                formatExecutionLog()
-//            )
         } catch (e: Exception) {
             errBGLM("something went wrong: ${e.message}")
-
-            val emptyBitmap =
-                createEmptyBitmap(
-                    CONTENT_IMAGE_SIZE,
-                    CONTENT_IMAGE_SIZE
-                )
-
-//            return ModelExecutionResult(
-//                emptyBitmap, errorMessage = e.message!!
-//            )
         }
     }
 
@@ -161,19 +121,6 @@ class StyleTransferer(context: Context) {
         return Interpreter(loadModelFile(context, modelName), tfliteOptions)
     }
 
-    private fun formatExecutionLog(): String {
-        val sb = StringBuilder()
-        sb.append("Input Image Size: $CONTENT_IMAGE_SIZE x $CONTENT_IMAGE_SIZE\n")
-        sb.append("GPU enabled: $useGPU\n")
-        sb.append("Number of threads: $numberThreads\n")
-        sb.append("Pre-process execution time: $preProcessTime ms\n")
-        sb.append("Predicting style execution time: $stylePredictTime ms\n")
-        sb.append("Transferring style execution time: $styleTransferTime ms\n")
-        sb.append("Post-process execution time: $postProcessTime ms\n")
-        sb.append("Full execution time: $fullExecutionTime ms\n")
-        return sb.toString()
-    }
-
     fun close() {
         interpreterPredict.close()
         interpreterTransform.close()
@@ -182,11 +129,4 @@ class StyleTransferer(context: Context) {
         }
     }
 
-    fun transferStyle(styleUri: Uri, inputUri: Uri, resultViewModel: ImageViewModel) {
-        // get a new image
-        debugBGLM("need to do transfer")
-//        val resultUri: Uri? = null
-//        resultViewModel.image.postValue(resultUri)
-
-    }
 }

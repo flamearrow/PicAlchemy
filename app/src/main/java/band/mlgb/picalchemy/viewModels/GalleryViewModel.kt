@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.liveData
-import band.mlgb.picalchemy.errBGLM
+import band.mlgb.picalchemy.utils.errBGLM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

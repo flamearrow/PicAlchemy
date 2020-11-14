@@ -8,12 +8,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewModelScope
 import band.mlgb.picalchemy.adapters.StyleListAdapter
 import band.mlgb.picalchemy.databinding.FragmentAlchemyBinding
 import band.mlgb.picalchemy.tensorflow.StyleTransferer
 import band.mlgb.picalchemy.viewModels.ImageViewModel
 import band.mlgb.picalchemy.viewModels.StyleListViewModel
 import band.mlgb.picalchemy.views.UriPickedListener
+import kotlinx.coroutines.launch
 
 class AlchemyFragment : Fragment(), UriPickedListener {
     private val styleListViewModel: StyleListViewModel by viewModels {
@@ -54,14 +56,6 @@ class AlchemyFragment : Fragment(), UriPickedListener {
             binding.executePendingBindings()
         }
 
-        // if any style is selected, gets the value and run transfer
-        styleListViewModel.selectedStyle.observe(viewLifecycleOwner) { styleUri ->
-            // uri is the selected style, combine it with current image
-            val inputUri = inputImageViewModel.image.value!!
-            styleTransferer.transferStyle(styleUri, inputUri, resultImageViewModel)
-        }
-
-
         return binding.root
     }
 
@@ -75,9 +69,21 @@ class AlchemyFragment : Fragment(), UriPickedListener {
         }
     }
 
-    override fun onUriPicked(styleUri: Uri) {
-        inputImageViewModel.image.value?.let {
-            styleTransferer.transferStyle(styleUri, it, resultImageViewModel)
+
+    // An style file uri is picked
+    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
+    override fun onUriPicked(styleFileUri: Uri) {
+        inputImageViewModel.image.value?.let { inputContentUri ->
+            // input from camera: content://band.mlgb.picalchemy.fileprovider/my_images/Pictures/JPEG_20201113_163511_5835964646040696703.jpg
+            // input from gallery: content://media/external/images/media/11525
+            inputImageViewModel.viewModelScope.launch {
+                styleTransferer.transferStyle(
+                    styleFileUri,
+                    inputContentUri,
+                    resultImageViewModel,
+                    requireActivity(),
+                )
+            }
         }
     }
 }

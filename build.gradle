@@ -4,8 +4,9 @@ buildscript {
         kotlin_version = "1.4.10"
         lifecycleVersion = "2.2.0"
         appCompatVersion = "1.2.0"
-        glideVersion = '4.10.0'
-        tfl_version = "0.0.0-nightly"
+        glideVersion = '4.11.0'
+//        tfl_version = "0.0.0-nightly"
+        tfl_version = "2.2.0"
     }
 
     repositories {
