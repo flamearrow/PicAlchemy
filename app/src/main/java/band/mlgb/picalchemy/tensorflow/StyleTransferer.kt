@@ -3,7 +3,7 @@ package band.mlgb.picalchemy.tensorflow
 import android.content.Context
 import android.net.Uri
 import band.mlgb.picalchemy.utils.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.GpuDelegate
@@ -11,9 +11,15 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
+import javax.inject.Inject
 
-
-class StyleTransferer(context: Context) {
+/**
+ * Execute the style transferring tensorflow model with a dedicated single thread dispatcher
+ */
+class StyleTransferer @Inject constructor(
+    context: Context,
+    private val executorCoroutineDispatcher: ExecutorCoroutineDispatcher
+) {
 
     // TODO: useGPU when available
     private var useGPU: Boolean = false
@@ -48,8 +54,7 @@ class StyleTransferer(context: Context) {
         inputUri: Uri,
         context: Context
     ): Uri? =
-        // daggerize with a signleThreadExecutor
-        withContext(Dispatchers.Default) {
+        withContext(executorCoroutineDispatcher) {
             try {
                 val contentImage = uriToBitmap(inputUri, context)
                 val contentArray =

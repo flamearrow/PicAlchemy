@@ -16,6 +16,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import band.mlgb.picalchemy.adapters.StyleListAdapter
 import band.mlgb.picalchemy.databinding.FragmentAlchemyBinding
+import band.mlgb.picalchemy.inject.DaggerPicAlchemyComponent
+import band.mlgb.picalchemy.inject.TensorflowModule
 import band.mlgb.picalchemy.tensorflow.StyleTransferer
 import band.mlgb.picalchemy.utils.debugBGLM
 import band.mlgb.picalchemy.utils.saveUriToGallery
@@ -23,6 +25,7 @@ import band.mlgb.picalchemy.viewModels.ImageViewModel
 import band.mlgb.picalchemy.viewModels.StyleListViewModel
 import band.mlgb.picalchemy.views.UriPickedListener
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, View.OnTouchListener {
     private val styleListViewModel: StyleListViewModel by viewModels {
@@ -34,9 +37,8 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
     // this view model only handles the merged result
     private val resultImageViewModel: ImageViewModel by viewModels()
 
-    private val styleTransferer: StyleTransferer by lazy {
-        StyleTransferer(requireContext())
-    }
+    @Inject
+    lateinit var styleTransferer: StyleTransferer
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -44,6 +46,8 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        DaggerPicAlchemyComponent.builder().tensorflowModule(TensorflowModule(requireContext()))
+            .build().inject(this)
         val binding = FragmentAlchemyBinding.inflate(inflater)
         binding.onClickListener = this
         with(StyleListAdapter(this)) {

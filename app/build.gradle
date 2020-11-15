@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt' // for databinding
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -79,6 +80,10 @@ dependencies {
 
     // debug coroutine
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
+
+    // hilt&dagger
+    implementation "com.google.dagger:hilt-android:$rootProject.hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$rootProject.hilt_version"
 
 
 }
