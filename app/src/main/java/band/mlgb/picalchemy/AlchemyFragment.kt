@@ -191,7 +191,15 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
                         when (event.action) {
                             // press to show original
                             MotionEvent.ACTION_DOWN -> {
-                                inputImageViewModel.repostIfNotNull()
+                                resultImageViewModel.image.value?.let {
+                                    inputImageViewModel.repostIfNotNull()
+                                } ?: run {
+                                    Toast.makeText(
+                                        context,
+                                        getString(R.string.no_styled_img),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
                             // lift to show styled
                             MotionEvent.ACTION_UP -> {

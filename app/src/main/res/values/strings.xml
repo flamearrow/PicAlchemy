@@ -2,7 +2,7 @@
     <string name="app_name">PicAlchemy</string>
     <string name="share_with">Share with…</string>
     <string name="saved">Saved!</string>
-    <string name="no_styled_img">No styled image found, select a style first!</string>
+    <string name="no_styled_img">No alchemy done yet, select a style below first!</string>
     <string name="save_failed">Failed to save image</string>
     <string name="continue_without_external_read">To load your photos, grant PicAlchemy storage permission in your app settings</string>
     <string name="permission_rationale">PicAlchemy runs magic on your photos, therefore it needs to have permission to access your photo - none of your photos is ever uploaded.</string>
