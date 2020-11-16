@@ -14,9 +14,9 @@
     <application
         android:name=".PicAlchemyApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_alchemy"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_alchemy"
         android:supportsRtl="true"
         android:theme="@style/Theme.PicAlchemy">
         <activity android:name=".AlchemyActivity">
