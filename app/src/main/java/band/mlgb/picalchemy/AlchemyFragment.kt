@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import band.mlgb.picalchemy.adapters.StyleListAdapter
 import band.mlgb.picalchemy.databinding.FragmentAlchemyBinding
+import band.mlgb.picalchemy.inject.ToyComplicatedClass
 import band.mlgb.picalchemy.tensorflow.StyleTransferer
 import band.mlgb.picalchemy.utils.debugBGLM
 import band.mlgb.picalchemy.utils.saveUriToGallery
@@ -43,6 +44,12 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
 
     @Inject
     lateinit var styleTransferer: StyleTransferer
+
+
+    // Similar to inputImageViewModel, this instance is also @ActivityScope, but it's injected
+    // inside the subcomponent module AlchemySubcomponentModule, instead of declared in constructor.
+    @Inject
+    lateinit var toy: ToyComplicatedClass
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(

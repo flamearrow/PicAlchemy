@@ -9,7 +9,7 @@ import javax.inject.Singleton
  * doesn't have AlchemuSubComponentMoudle setters as its a subcomponent module and should be created later
  */
 @Singleton
-@Component(modules = [TensorflowModule::class, AlchemySubcomponentModule::class])
+@Component(modules = [TensorflowModule::class])
 interface PicAlchemyComponent {
     // Note this component doesn't need to inject(), it just needs to be hold in Application
     // and used to expose the actual subcomponent to call inject() when needed

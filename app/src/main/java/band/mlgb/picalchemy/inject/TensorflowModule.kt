@@ -14,6 +14,7 @@ import javax.inject.Singleton
 class TensorflowModule(val context: Context) {
 
     @Provides
+    @Singleton
     fun provideContext() = context
 
     @ObsoleteCoroutinesApi

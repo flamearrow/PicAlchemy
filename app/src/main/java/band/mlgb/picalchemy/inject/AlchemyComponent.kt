@@ -12,7 +12,7 @@ import dagger.Subcomponent
  * This component will be hold by an activity, then exposed to Fragments to call inject()
  */
 @ActivityScope
-@Subcomponent
+@Subcomponent(modules = [AlchemySubcomponentModule::class])
 interface AlchemyComponent {
     @Subcomponent.Factory
     interface Factory {

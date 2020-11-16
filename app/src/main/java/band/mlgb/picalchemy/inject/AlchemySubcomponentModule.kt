@@ -1,6 +1,8 @@
 package band.mlgb.picalchemy.inject
 
+import android.content.Context
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.migration.DisableInstallInCheck
 
 /**
@@ -12,5 +14,11 @@ import dagger.hilt.migration.DisableInstallInCheck
  */
 
 @DisableInstallInCheck
-@Module(subcomponents = [AlchemyComponent::class])
-class AlchemySubcomponentModule
+@Module
+class AlchemySubcomponentModule {
+    @Provides
+    @ActivityScope
+    fun provideToyComplicatedClassInstance(context: Context): ToyComplicatedClass {
+        return ToyComplicatedClass(context)
+    }
+}

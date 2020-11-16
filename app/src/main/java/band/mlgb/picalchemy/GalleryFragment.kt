@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import band.mlgb.picalchemy.adapters.GalleryAdapter
 import band.mlgb.picalchemy.databinding.FragmentGalleryBinding
+import band.mlgb.picalchemy.inject.ToyComplicatedClass
 import band.mlgb.picalchemy.utils.createInternalFileUri
 import band.mlgb.picalchemy.viewModels.GalleryViewModel
 import band.mlgb.picalchemy.viewModels.ImageViewModel
@@ -34,6 +35,11 @@ class GalleryFragment : Fragment(), UriPickedListener {
     // will need to let the ViewModel extend AndroidViewModel and pass application instead
     @Inject
     lateinit var inputImageViewModel: ImageViewModel
+
+    // Similar to inputImageViewModel, this instance is also @ActivityScope, but it's injected
+    // inside the subcomponent module AlchemySubcomponentModule, instead of declared in constructor.
+    @Inject
+    lateinit var toy: ToyComplicatedClass
 
     private var uriByCamera: Uri? = null
 
