@@ -4,7 +4,6 @@ import band.mlgb.picalchemy.AlchemyActivity
 import band.mlgb.picalchemy.AlchemyFragment
 import band.mlgb.picalchemy.GalleryFragment
 import dagger.Subcomponent
-import dagger.hilt.android.scopes.ActivityScoped
 
 /**
  * Managers instances within one instance of [AlchemyActivity], this is an overkill as there's no
@@ -12,7 +11,7 @@ import dagger.hilt.android.scopes.ActivityScoped
  *
  * This component will be hold by an activity, then exposed to Fragments to call inject()
  */
-@ActivityScoped
+@ActivityScope
 @Subcomponent
 interface AlchemyComponent {
     @Subcomponent.Factory

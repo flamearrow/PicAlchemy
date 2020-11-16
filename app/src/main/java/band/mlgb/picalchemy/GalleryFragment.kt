@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import band.mlgb.picalchemy.adapters.GalleryAdapter
@@ -18,6 +17,7 @@ import band.mlgb.picalchemy.utils.createInternalFileUri
 import band.mlgb.picalchemy.viewModels.GalleryViewModel
 import band.mlgb.picalchemy.viewModels.ImageViewModel
 import band.mlgb.picalchemy.views.UriPickedListener
+import javax.inject.Inject
 
 class GalleryFragment : Fragment(), UriPickedListener {
     companion object {
@@ -28,7 +28,12 @@ class GalleryFragment : Fragment(), UriPickedListener {
         GalleryViewModel.providerFactory(requireActivity().contentResolver)
     }
 
-    private val inputImageViewModel: ImageViewModel by activityViewModels()
+    // When injected, the ImageViewModel has @AciivityScope, which is bound with AlchemyActivity
+    // This is essentially same with
+    // private val inputImageViewModel: ImageViewModel by activityViewModels()
+    // will need to let the ViewModel extend AndroidViewModel and pass application instead
+    @Inject
+    lateinit var inputImageViewModel: ImageViewModel
 
     private var uriByCamera: Uri? = null
 
@@ -38,7 +43,7 @@ class GalleryFragment : Fragment(), UriPickedListener {
         savedInstanceState: Bundle?
     ): View? {
         (activity as AlchemyActivity).alchemoyComponent.inject(this)
-        
+
         val binding = FragmentGalleryBinding.inflate(layoutInflater)
 
         with(GalleryAdapter(this)) {

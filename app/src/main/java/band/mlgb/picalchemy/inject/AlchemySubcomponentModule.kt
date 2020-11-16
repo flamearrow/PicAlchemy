@@ -13,4 +13,4 @@ import dagger.hilt.migration.DisableInstallInCheck
 
 @DisableInstallInCheck
 @Module(subcomponents = [AlchemyComponent::class])
-interface AlchemySubcomponentModule
+class AlchemySubcomponentModule

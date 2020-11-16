@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
@@ -30,9 +29,16 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
         StyleListViewModel.providerFactory(requireActivity().assets)
     }
 
-    private val inputImageViewModel: ImageViewModel by activityViewModels()
+    // When injected, the ImageViewModel has @AciivityScope, which is bound with AlchemyActivity
+    // This is essentially same with
+    // private val inputImageViewModel: ImageViewModel by activityViewModels()
+    // will need to let the ViewModel extend AndroidViewModel and pass application instead
+    @Inject
+    lateinit var inputImageViewModel: ImageViewModel
+
 
     // this view model only handles the merged result
+    // Note injected, use vieModels() to bound with this Fragment
     private val resultImageViewModel: ImageViewModel by viewModels()
 
     @Inject
