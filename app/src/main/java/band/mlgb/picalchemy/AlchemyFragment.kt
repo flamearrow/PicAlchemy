@@ -16,8 +16,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import band.mlgb.picalchemy.adapters.StyleListAdapter
 import band.mlgb.picalchemy.databinding.FragmentAlchemyBinding
-import band.mlgb.picalchemy.inject.DaggerPicAlchemyComponent
-import band.mlgb.picalchemy.inject.TensorflowModule
 import band.mlgb.picalchemy.tensorflow.StyleTransferer
 import band.mlgb.picalchemy.utils.debugBGLM
 import band.mlgb.picalchemy.utils.saveUriToGallery
@@ -46,9 +44,13 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        DaggerPicAlchemyComponent.builder().tensorflowModule(TensorflowModule(requireContext()))
-            .build().inject(this)
+        //        DaggerPicAlchemyComponent.builder().tensorflowModule(TensorflowModule(requireContext())).
+        //            .build().inject(this)
+        // Instead of creating a new component, access the activity scoped subcomponent from activity
+        (activity as AlchemyActivity).alchemoyComponent.inject(this)
+
         val binding = FragmentAlchemyBinding.inflate(inflater)
+
         binding.onClickListener = this
         with(StyleListAdapter(this)) {
             binding.styleList.adapter = this

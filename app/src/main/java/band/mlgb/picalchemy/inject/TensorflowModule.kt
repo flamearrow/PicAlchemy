@@ -9,7 +9,6 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.newSingleThreadContext
 import javax.inject.Singleton
 
-
 @Module
 @DisableInstallInCheck
 class TensorflowModule(val context: Context) {

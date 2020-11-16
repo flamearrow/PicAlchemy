@@ -37,6 +37,8 @@ class GalleryFragment : Fragment(), UriPickedListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        (activity as AlchemyActivity).alchemoyComponent.inject(this)
+        
         val binding = FragmentGalleryBinding.inflate(layoutInflater)
 
         with(GalleryAdapter(this)) {
