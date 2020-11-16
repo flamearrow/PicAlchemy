@@ -6,7 +6,6 @@ import band.mlgb.picalchemy.utils.*
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.gpu.GpuDelegate
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
@@ -21,22 +20,21 @@ class StyleTransferer @Inject constructor(
     private val executorCoroutineDispatcher: ExecutorCoroutineDispatcher
 ) {
 
-    // TODO: useGPU when available
-    private var useGPU: Boolean = false
-    private var gpuDelegate: GpuDelegate? = null
+    //    private var useGPU: Boolean = false
+//    private var gpuDelegate: GpuDelegate? = null
     private var numberThreads = 4
 
     private val interpreterPredict: Interpreter
     private val interpreterTransform: Interpreter
 
     init {
-        if (useGPU) {
-            interpreterPredict = getInterpreter(context, STYLE_PREDICT_FLOAT16_MODEL, true)
-            interpreterTransform = getInterpreter(context, STYLE_TRANSFER_FLOAT16_MODEL, true)
-        } else {
-            interpreterPredict = getInterpreter(context, STYLE_PREDICT_INT8_MODEL, false)
-            interpreterTransform = getInterpreter(context, STYLE_TRANSFER_INT8_MODEL, false)
-        }
+//        if (useGPU) {
+//            interpreterPredict = getInterpreter(context, STYLE_PREDICT_FLOAT16_MODEL, true)
+//            interpreterTransform = getInterpreter(context, STYLE_TRANSFER_FLOAT16_MODEL, true)
+//        } else {
+        interpreterPredict = getInterpreter(context, STYLE_PREDICT_INT8_MODEL)
+        interpreterTransform = getInterpreter(context, STYLE_TRANSFER_INT8_MODEL)
+//        }
     }
 
     companion object {
@@ -45,8 +43,6 @@ class StyleTransferer @Inject constructor(
         private const val BOTTLENECK_SIZE = 100
         private const val STYLE_PREDICT_INT8_MODEL = "style_predict_quantized_256.tflite"
         private const val STYLE_TRANSFER_INT8_MODEL = "style_transfer_quantized_384.tflite"
-        private const val STYLE_PREDICT_FLOAT16_MODEL = "style_predict_f16_256.tflite"
-        private const val STYLE_TRANSFER_FLOAT16_MODEL = "style_transfer_f16_384.tflite"
     }
 
     suspend fun transferStyle(
@@ -111,28 +107,19 @@ class StyleTransferer @Inject constructor(
     @Throws(IOException::class)
     private fun getInterpreter(
         context: Context,
-        modelName: String,
-        useGpu: Boolean = false
+        modelName: String
     ): Interpreter {
         val tfliteOptions = Interpreter.Options()
         tfliteOptions.setNumThreads(numberThreads)
-
-        gpuDelegate = null
-        if (useGpu) {
-            gpuDelegate = GpuDelegate()
-            tfliteOptions.addDelegate(gpuDelegate)
-        }
 
         tfliteOptions.setNumThreads(numberThreads)
         return Interpreter(loadModelFile(context, modelName), tfliteOptions)
     }
 
-    fun close() {
+
+    protected fun finalize() {
         interpreterPredict.close()
         interpreterTransform.close()
-        if (gpuDelegate != null) {
-            gpuDelegate!!.close()
-        }
     }
 
 }
