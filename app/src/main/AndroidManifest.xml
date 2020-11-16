@@ -19,7 +19,9 @@
         android:roundIcon="@drawable/ic_alchemy"
         android:supportsRtl="true"
         android:theme="@style/Theme.PicAlchemy">
-        <activity android:name=".AlchemyActivity">
+        <activity
+            android:name=".AlchemyActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
