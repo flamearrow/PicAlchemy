@@ -9,5 +9,6 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Thread.sleep(350)
         startActivity(Intent(this, AlchemyActivity::class.java))
+        finish()
     }
 }
