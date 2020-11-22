@@ -51,6 +51,8 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
     @Inject
     lateinit var toy: ToyComplicatedClass
 
+    lateinit var binding: FragmentAlchemyBinding
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,7 +64,7 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
         // Instead of creating a new component, access the activity scoped subcomponent from activity
         (activity as AlchemyActivity).alchemoyComponent.inject(this)
 
-        val binding = FragmentAlchemyBinding.inflate(inflater)
+        binding = FragmentAlchemyBinding.inflate(inflater)
 
         binding.onClickListener = this
         with(StyleListAdapter(this)) {
@@ -81,6 +83,8 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
 
         // later if a result image is calculated, display the result image
         resultImageViewModel.image.observe(viewLifecycleOwner) {
+            binding.progressCircular.visibility = View.INVISIBLE
+            binding.resultImg.visibility = View.VISIBLE
             binding.uri = it
             binding.executePendingBindings()
         }
@@ -102,12 +106,13 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
     // An style file uri is picked
     @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
     override fun onUriPicked(styleFileUri: Uri) {
+        binding.progressCircular.visibility = View.VISIBLE
+        binding.resultImg.visibility = View.INVISIBLE
+
         inputImageViewModel.image.value?.let { inputContentUri ->
             // input from camera: content://band.mlgb.picalchemy.fileprovider/my_images/Pictures/JPEG_20201113_163511_5835964646040696703.jpg
             // input from gallery: content://media/external/images/media/11525
             inputImageViewModel.viewModelScope.launch {
-                // TODO: change image to loading animation
-                // will start on a separate thread, main
                 styleTransferer.transferStyle(
                     styleFileUri,
                     inputContentUri,

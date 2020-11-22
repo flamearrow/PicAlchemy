@@ -7,6 +7,7 @@
         <variable
             name="onClickListener"
             type="android.view.View.OnClickListener" />
+
         <variable
             name="uri"
             type="android.net.Uri" />
@@ -37,7 +38,14 @@
                 app:cardCornerRadius="5dp"
                 app:cardElevation="2dp">
 
+                <ProgressBar
+                    android:id="@+id/progress_circular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+
                 <ImageView
+                    android:id="@+id/result_img"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:contentDescription="@null"
