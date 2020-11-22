@@ -77,27 +77,39 @@ fun scaleBitmapAndKeepRatio(
     if (targetBmp.height == reqHeightInPixels && targetBmp.width == reqWidthInPixels) {
         return targetBmp
     }
-    val matrix = Matrix()
-    matrix.setRectToRect(
-        RectF(
-            0f, 0f,
-            targetBmp.width.toFloat(),
-            targetBmp.width.toFloat()
-        ),
-        RectF(
-            0f, 0f,
-            reqWidthInPixels.toFloat(),
-            reqHeightInPixels.toFloat()
-        ),
-        Matrix.ScaleToFit.FILL
-    )
-    return Bitmap.createBitmap(
-        targetBmp, 0, 0,
-        targetBmp.width,
-        targetBmp.width, matrix, true
-    )
+    // if h > w, center vertical, otherwise center horizontal
+    val centerVertical = targetBmp.height > targetBmp.width
+
+    Matrix().let { matrix ->
+        matrix.setRectToRect(
+            RectF(
+                0f, 0f,
+                if (centerVertical) targetBmp.width.toFloat() else targetBmp.height.toFloat(),
+                if (centerVertical) targetBmp.width.toFloat() else targetBmp.height.toFloat()
+            ),
+            RectF(
+                0f, 0f,
+                reqWidthInPixels.toFloat(),
+                reqHeightInPixels.toFloat()
+            ),
+            Matrix.ScaleToFit.FILL
+        )
+
+        // copy the vertically or horizontally centered square
+        return if (centerVertical) Bitmap.createBitmap(
+            targetBmp, 0, (targetBmp.height - targetBmp.width) / 2,
+            targetBmp.width,
+            targetBmp.width, matrix, true
+        ) else Bitmap.createBitmap(
+            targetBmp, (targetBmp.width - targetBmp.height) / 2, 0,
+            targetBmp.height,
+            targetBmp.height, matrix, true
+        )
+    }
 }
 
+// get the center of the bitmap and convert it to bytebuffer
+// if width > height, center horizontally, otherwise center vertically
 fun bitmapToByteBuffer(
     bitmapIn: Bitmap,
     width: Int,
