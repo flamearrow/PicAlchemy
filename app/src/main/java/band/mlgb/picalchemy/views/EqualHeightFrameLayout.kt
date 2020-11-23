@@ -4,14 +4,13 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 
-
-class EqualWidthFrameLayout @JvmOverloads constructor(
+class EqualHeightFrameLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
+        super.onMeasure(heightMeasureSpec, heightMeasureSpec)
     }
 }

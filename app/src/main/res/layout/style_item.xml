@@ -17,6 +17,8 @@
     <band.mlgb.picalchemy.views.EqualHeightFrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:onClick="@{onClickListener}"
         android:padding="2dp">
 
         <androidx.cardview.widget.CardView
@@ -28,7 +30,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@null"
-                android:onClick="@{onClickListener}"
                 android:scaleType="centerCrop"
                 app:bindStyleImage="@{uri}" />
         </androidx.cardview.widget.CardView>
