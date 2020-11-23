@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.findNavController
 import band.mlgb.picalchemy.adapters.StyleListAdapter
 import band.mlgb.picalchemy.databinding.FragmentAlchemyBinding
 import band.mlgb.picalchemy.inject.ToyComplicatedClass
@@ -27,9 +28,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, View.OnTouchListener {
-    private val styleListViewModel: StyleListViewModel by viewModels {
-        StyleListViewModel.providerFactory(requireActivity().assets)
-    }
+    // styleListViewModel gets updated by the selection from GalleryViewModel,
+    // need to be @ActivityScope
+    @Inject
+    lateinit var styleListViewModel: StyleListViewModel;
+//            by viewModels {
+//        StyleListViewModel.providerFactory(requireActivity().assets)
+//    }
 
     // When injected, the ImageViewModel has @AciivityScope, which is bound with AlchemyActivity
     // This is essentially same with
@@ -65,7 +70,7 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
         //        DaggerPicAlchemyComponent.builder().tensorflowModule(TensorflowModule(requireContext())).
         //            .build().inject(this)
         // Instead of creating a new component, access the activity scoped subcomponent from activity
-        (activity as AlchemyActivity).alchemoyComponent.inject(this)
+        (activity as AlchemyActivity).alchemoySubComponent.inject(this)
 
         binding = FragmentAlchemyBinding.inflate(inflater)
 
@@ -106,24 +111,20 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
     }
 
 
-    // An style file uri is picked
-    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-    override fun onUriPicked(styleFileUri: Uri) {
-        binding.progressCircular.visibility = View.VISIBLE
-        binding.resultImg.visibility = View.INVISIBLE
-
-
-
+    // An style uri is picked, it's either a preloaded file uri or a newly added content uri
+    override fun onUriPicked(uri: Uri) {
         inputImageViewModel.image.value?.let { inputContentUri ->
             inputImageViewModel.viewModelScope.launch {
-                styleFileUri.path?.substringAfterLast("/")?.let { styleName ->
-                    if (styleName.startsWith("style")) {
+                uri.path?.substringAfterLast("/")?.let { styleName ->
+                    if (styleName.startsWith("style") || uri.scheme == "content") {
+                        binding.progressCircular.visibility = View.VISIBLE
+                        binding.resultImg.visibility = View.INVISIBLE
                         inputImageViewModel.image.value?.let { inputContentUri ->
                             // input from camera: content://band.mlgb.picalchemy.fileprovider/my_images/Pictures/JPEG_20201113_163511_5835964646040696703.jpg
                             // input from gallery: content://media/external/images/media/11525
                             inputImageViewModel.viewModelScope.launch {
                                 styleTransferer.transferStyle(
-                                    styleFileUri,
+                                    uri,
                                     inputContentUri,
                                     requireActivity(),
                                 )?.let {
@@ -136,12 +137,16 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
                             }
                         }
                     } else if (styleName.startsWith("holo")) {
+                        binding.progressCircular.visibility = View.VISIBLE
+                        binding.resultImg.visibility = View.INVISIBLE
                         cartonnizer.cartoonize(inputContentUri)?.let {
                             resultImageViewModel.image.postValue(it)
                         } ?: run {
                             // reset original image
                             inputImageViewModel.repostIfNotNull()
                         }
+                    } else if (styleName.startsWith("add")) {
+                        findNavController().navigate(AlchemyFragmentDirections.actionPickStyle(false))
                     }
                 }
             }

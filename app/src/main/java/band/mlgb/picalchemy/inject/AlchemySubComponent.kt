@@ -13,10 +13,10 @@ import dagger.Subcomponent
  */
 @ActivityScope
 @Subcomponent(modules = [AlchemySubcomponentModule::class])
-interface AlchemyComponent {
+interface AlchemySubComponent {
     @Subcomponent.Factory
     interface Factory {
-        fun create(): AlchemyComponent
+        fun create(): AlchemySubComponent
     }
 
     //    fun inject(alchemyActivity: AlchemyActivity)

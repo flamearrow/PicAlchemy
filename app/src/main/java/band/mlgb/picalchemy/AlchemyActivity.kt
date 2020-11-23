@@ -10,15 +10,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import band.mlgb.picalchemy.databinding.ActivityEntryBinding
-import band.mlgb.picalchemy.inject.AlchemyComponent
+import band.mlgb.picalchemy.inject.AlchemySubComponent
 
 class AlchemyActivity : AppCompatActivity() {
     // The ActivityScoped subcomponent is to be created inside an activity and accessed by Fragment
-    lateinit var alchemoyComponent: AlchemyComponent
+    lateinit var alchemoySubComponent: AlchemySubComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        alchemoyComponent =
+        alchemoySubComponent =
             (application as PicAlchemyApp).appComponent.alchemyComponentFactory().create()
         checkAndRequestForPermission()
     }

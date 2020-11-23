@@ -11,20 +11,22 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import band.mlgb.picalchemy.adapters.GalleryAdapter
 import band.mlgb.picalchemy.databinding.FragmentGalleryBinding
 import band.mlgb.picalchemy.inject.ToyComplicatedClass
 import band.mlgb.picalchemy.utils.createInternalFileUri
 import band.mlgb.picalchemy.viewModels.GalleryViewModel
 import band.mlgb.picalchemy.viewModels.ImageViewModel
+import band.mlgb.picalchemy.viewModels.StyleListViewModel
 import band.mlgb.picalchemy.views.UriPickedListener
 import javax.inject.Inject
 
 class GalleryFragment : Fragment(), UriPickedListener {
-    companion object {
-        private const val TAKE_PIC = 1 shl 0
-    }
+    // safe arg plugin magic, equivalent to getArgments().getBoolean("paramName")
+    private val args: GalleryFragmentArgs by navArgs()
 
+    // live with the Fragment
     private val galleryViewModel: GalleryViewModel by viewModels {
         GalleryViewModel.providerFactory(requireActivity().contentResolver)
     }
@@ -41,6 +43,10 @@ class GalleryFragment : Fragment(), UriPickedListener {
     @Inject
     lateinit var toy: ToyComplicatedClass
 
+    // @ActivityScope, add styles to it when GalleryFragment is used for picking a new style
+    @Inject
+    lateinit var styleListViewModel: StyleListViewModel;
+
     private var uriByCamera: Uri? = null
 
     override fun onCreateView(
@@ -48,7 +54,7 @@ class GalleryFragment : Fragment(), UriPickedListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        (activity as AlchemyActivity).alchemoyComponent.inject(this)
+        (activity as AlchemyActivity).alchemoySubComponent.inject(this)
 
         val binding = FragmentGalleryBinding.inflate(layoutInflater)
 
@@ -97,10 +103,19 @@ class GalleryFragment : Fragment(), UriPickedListener {
         }
     }
 
-    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-    override fun onUriPicked(photo: Uri) {
-        inputImageViewModel.image.postValue(photo)
-        findNavController().navigate(R.id.action_gallery_to_alchemy)
+    override fun onUriPicked(uri: Uri) {
+        if (args.isPickingInput) {
+            inputImageViewModel.image.postValue(uri)
+            findNavController().navigate(GalleryFragmentDirections.pickInputGalleryToAlchemy())
+        } else {
+            styleListViewModel.prependStyleAndRepost(uri)
+//            findNavController().popBackStack() // current GalleryFragment
+//            findNavController().popBackStack() // previous AlchemyFragment
+            findNavController().navigate(GalleryFragmentDirections.pickStyleGalleryToAlchemy())
+        }
+    }
 
+    companion object {
+        private const val TAKE_PIC = 1 shl 0
     }
 }
