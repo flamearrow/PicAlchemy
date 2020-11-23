@@ -6,35 +6,23 @@ import band.mlgb.picalchemy.utils.*
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.Interpreter
-import java.io.FileInputStream
-import java.io.IOException
-import java.nio.MappedByteBuffer
-import java.nio.channels.FileChannel
 import javax.inject.Inject
 
 /**
  * Execute the style transferring tensorflow model with a dedicated single thread dispatcher
+ * https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2
  */
 class StyleTransferer @Inject constructor(
     context: Context,
     private val executorCoroutineDispatcher: ExecutorCoroutineDispatcher
 ) {
 
-    //    private var useGPU: Boolean = false
-//    private var gpuDelegate: GpuDelegate? = null
-    private var numberThreads = 4
-
     private val interpreterPredict: Interpreter
     private val interpreterTransform: Interpreter
 
     init {
-//        if (useGPU) {
-//            interpreterPredict = getInterpreter(context, STYLE_PREDICT_FLOAT16_MODEL, true)
-//            interpreterTransform = getInterpreter(context, STYLE_TRANSFER_FLOAT16_MODEL, true)
-//        } else {
         interpreterPredict = getInterpreter(context, STYLE_PREDICT_INT8_MODEL)
         interpreterTransform = getInterpreter(context, STYLE_TRANSFER_INT8_MODEL)
-//        }
     }
 
     companion object {
@@ -78,7 +66,6 @@ class StyleTransferer @Inject constructor(
                     inputsForStyleTransfer,
                     outputsForStyleTransfer
                 )
-                debugBGLM("finished blocking on main")
                 bitmapToUri(
                     convertArrayToBitmap(
                         outputImage,
@@ -91,31 +78,6 @@ class StyleTransferer @Inject constructor(
                 null
             }
         }
-
-    @Throws(IOException::class)
-    private fun loadModelFile(context: Context, modelFile: String): MappedByteBuffer {
-        val fileDescriptor = context.assets.openFd(modelFile)
-        val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-        val fileChannel = inputStream.channel
-        val startOffset = fileDescriptor.startOffset
-        val declaredLength = fileDescriptor.declaredLength
-        val retFile = fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
-        fileDescriptor.close()
-        return retFile
-    }
-
-    @Throws(IOException::class)
-    private fun getInterpreter(
-        context: Context,
-        modelName: String
-    ): Interpreter {
-        val tfliteOptions = Interpreter.Options()
-        tfliteOptions.setNumThreads(numberThreads)
-
-        tfliteOptions.setNumThreads(numberThreads)
-        return Interpreter(loadModelFile(context, modelName), tfliteOptions)
-    }
-
 
     protected fun finalize() {
         interpreterPredict.close()

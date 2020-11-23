@@ -5,8 +5,8 @@ buildscript {
         lifecycleVersion = "2.2.0"
         appCompatVersion = "1.2.0"
         glideVersion = '4.11.0'
-//        tfl_version = "0.0.0-nightly"
-        tfl_version = "2.2.0"
+        tfl_version = "0.0.0-nightly"
+//        tfl_version = "2.2.0"
         hilt_version = "2.28.3-alpha"
     }
 

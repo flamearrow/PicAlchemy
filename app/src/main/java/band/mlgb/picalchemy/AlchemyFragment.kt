@@ -16,6 +16,7 @@ import androidx.lifecycle.viewModelScope
 import band.mlgb.picalchemy.adapters.StyleListAdapter
 import band.mlgb.picalchemy.databinding.FragmentAlchemyBinding
 import band.mlgb.picalchemy.inject.ToyComplicatedClass
+import band.mlgb.picalchemy.tensorflow.Cartonnizer
 import band.mlgb.picalchemy.tensorflow.StyleTransferer
 import band.mlgb.picalchemy.utils.debugBGLM
 import band.mlgb.picalchemy.utils.saveUriToGallery
@@ -45,6 +46,8 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
     @Inject
     lateinit var styleTransferer: StyleTransferer
 
+    @Inject
+    lateinit var cartonnizer: Cartonnizer
 
     // Similar to inputImageViewModel, this instance is also @ActivityScope, but it's injected
     // inside the subcomponent module AlchemySubcomponentModule, instead of declared in constructor.
@@ -109,20 +112,37 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
         binding.progressCircular.visibility = View.VISIBLE
         binding.resultImg.visibility = View.INVISIBLE
 
+
+
         inputImageViewModel.image.value?.let { inputContentUri ->
-            // input from camera: content://band.mlgb.picalchemy.fileprovider/my_images/Pictures/JPEG_20201113_163511_5835964646040696703.jpg
-            // input from gallery: content://media/external/images/media/11525
             inputImageViewModel.viewModelScope.launch {
-                styleTransferer.transferStyle(
-                    styleFileUri,
-                    inputContentUri,
-                    requireActivity(),
-                )?.let {
-                    debugBGLM("posting value on main")
-                    resultImageViewModel.image.postValue(it)
-                } ?: run {
-                    // reset original image
-                    inputImageViewModel.repostIfNotNull()
+                styleFileUri.path?.substringAfterLast("/")?.let { styleName ->
+                    if (styleName.startsWith("style")) {
+                        inputImageViewModel.image.value?.let { inputContentUri ->
+                            // input from camera: content://band.mlgb.picalchemy.fileprovider/my_images/Pictures/JPEG_20201113_163511_5835964646040696703.jpg
+                            // input from gallery: content://media/external/images/media/11525
+                            inputImageViewModel.viewModelScope.launch {
+                                styleTransferer.transferStyle(
+                                    styleFileUri,
+                                    inputContentUri,
+                                    requireActivity(),
+                                )?.let {
+                                    debugBGLM("posting value on main")
+                                    resultImageViewModel.image.postValue(it)
+                                } ?: run {
+                                    // reset original image
+                                    inputImageViewModel.repostIfNotNull()
+                                }
+                            }
+                        }
+                    } else if (styleName.startsWith("holo")) {
+                        cartonnizer.cartoonize(inputContentUri)?.let {
+                            resultImageViewModel.image.postValue(it)
+                        } ?: run {
+                            // reset original image
+                            inputImageViewModel.repostIfNotNull()
+                        }
+                    }
                 }
             }
         }
