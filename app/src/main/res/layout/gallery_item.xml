@@ -13,7 +13,7 @@
             type="android.view.View.OnClickListener" />
     </data>
 
-    <band.mlgb.picalchemy.views.EqualWidthFrameLayout
+    <band.mlgb.picalchemy.views.SquareFrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:foreground="?android:attr/selectableItemBackground"
@@ -33,6 +33,6 @@
                 app:bindGalleryImage="@{uri}" />
         </androidx.cardview.widget.CardView>
 
-    </band.mlgb.picalchemy.views.EqualWidthFrameLayout>
+    </band.mlgb.picalchemy.views.SquareFrameLayout>
 
 </layout>

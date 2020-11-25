@@ -18,7 +18,7 @@
         android:layout_height="match_parent">
 
 
-        <band.mlgb.picalchemy.views.EqualWidthFrameLayout
+        <band.mlgb.picalchemy.views.SquareFrameLayout
             android:id="@+id/result"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
                     app:bindResultImage="@{uri}" />
             </androidx.cardview.widget.CardView>
 
-        </band.mlgb.picalchemy.views.EqualWidthFrameLayout>
+        </band.mlgb.picalchemy.views.SquareFrameLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/save"

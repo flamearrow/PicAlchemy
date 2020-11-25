@@ -19,7 +19,7 @@ fun bindGalleryImage(view: ImageView, uri: Uri) {
 fun bindStyleImage(view: ImageView, uri: Uri) {
     Glide.with(view.context)
         .load(uri)
-        .centerInside()
+        .centerCrop()
         .into(view)
 }
 

@@ -14,7 +14,7 @@
 
     </data>
 
-    <band.mlgb.picalchemy.views.EqualHeightFrameLayout
+    <band.mlgb.picalchemy.views.SquareFrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:foreground="?android:attr/selectableItemBackground"
@@ -22,16 +22,15 @@
         android:padding="2dp">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:cardCornerRadius="5dp">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:contentDescription="@null"
-                android:scaleType="centerCrop"
                 app:bindStyleImage="@{uri}" />
         </androidx.cardview.widget.CardView>
-    </band.mlgb.picalchemy.views.EqualHeightFrameLayout>
+    </band.mlgb.picalchemy.views.SquareFrameLayout>
 </layout>
