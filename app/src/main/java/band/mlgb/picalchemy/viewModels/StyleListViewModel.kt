@@ -4,11 +4,11 @@ import android.content.res.AssetManager
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import band.mlgb.picalchemy.inject.ActivityScope
 import band.mlgb.picalchemy.utils.errBGLM
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
 
-@ActivityScope
+@ActivityRetainedScoped
 class StyleListViewModel @Inject constructor(assets: AssetManager) : ViewModel() {
     private var currentStyleList =
         assets.list("thumbnails")?.let { styleFiles ->
@@ -43,16 +43,6 @@ class StyleListViewModel @Inject constructor(assets: AssetManager) : ViewModel()
     }
 
     companion object {
-//        fun providerFactory(
-//            assets: AssetManager
-//        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-//            @Suppress("UNCHECKED_CAST")
-//            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-//                return StyleListViewModel(assets) as T
-//            }
-//
-//        }
-
         private const val STYLE_PREFIX = "style"
         private const val CARTOONIZER = "holo.jpg"
         private const val ADD = "add.jpg"

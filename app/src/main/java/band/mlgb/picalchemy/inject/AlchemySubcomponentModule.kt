@@ -3,22 +3,23 @@ package band.mlgb.picalchemy.inject
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.migration.DisableInstallInCheck
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 /**
  * Provides activity scoped viewmodels to [AlchemyAcitivity] and its two
  * fragments [AlchemyFragment] and [GalleryFragment].
  *
- * This is an overkill as there's no multiple instances of AlchemyActivity,
- * just demonstrating dagger subcomponent with activities scope.
+ * This is an overkill as we hiltified the app and installed in [ActivityRetainedComponent],
+ * it shouldn't be called subcomponent.
  */
 
-@DisableInstallInCheck
 @Module
+@InstallIn(ActivityRetainedComponent::class)
 class AlchemySubcomponentModule {
     @Provides
-    @ActivityScope
-    fun provideToyComplicatedClassInstance(context: Context): ToyComplicatedClass {
+    fun provideToyComplicatedClassInstance(@ApplicationContext context: Context): ToyComplicatedClass {
         return ToyComplicatedClass(context)
     }
 }

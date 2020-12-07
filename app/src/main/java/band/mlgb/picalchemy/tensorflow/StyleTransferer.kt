@@ -3,6 +3,7 @@ package band.mlgb.picalchemy.tensorflow
 import android.content.Context
 import android.net.Uri
 import band.mlgb.picalchemy.utils.*
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.Interpreter
@@ -13,7 +14,7 @@ import javax.inject.Inject
  * https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2
  */
 class StyleTransferer @Inject constructor(
-    context: Context,
+    @ApplicationContext context: Context,
     private val executorCoroutineDispatcher: ExecutorCoroutineDispatcher
 ) {
 

@@ -9,12 +9,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.liveData
 import band.mlgb.picalchemy.utils.errBGLM
+import dagger.hilt.android.scopes.FragmentScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 // ViewModel using ContentProvider to access local images
 // use a suspend function to load from content provider and cursor
-class GalleryViewModel(private val contentResolver: ContentResolver) : ViewModel() {
+@FragmentScoped
+class GalleryViewModel @Inject constructor(private val contentResolver: ContentResolver) :
+    ViewModel() {
     val imageUris: LiveData<List<Uri>> = liveData {
         emit(loadImages())
     }

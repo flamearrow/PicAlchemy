@@ -10,12 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import band.mlgb.picalchemy.adapters.StyleListAdapter
 import band.mlgb.picalchemy.databinding.FragmentAlchemyBinding
+import band.mlgb.picalchemy.inject.InputImageViewModel
+import band.mlgb.picalchemy.inject.ResultImageViewModel
 import band.mlgb.picalchemy.inject.ToyComplicatedClass
 import band.mlgb.picalchemy.tensorflow.Cartonnizer
 import band.mlgb.picalchemy.tensorflow.StyleTransferer
@@ -24,9 +25,11 @@ import band.mlgb.picalchemy.utils.saveUriToGallery
 import band.mlgb.picalchemy.viewModels.ImageViewModel
 import band.mlgb.picalchemy.viewModels.StyleListViewModel
 import band.mlgb.picalchemy.views.UriPickedListener
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, View.OnTouchListener {
     // styleListViewModel gets updated by the selection from GalleryViewModel,
     // need to be @ActivityScope
@@ -41,12 +44,16 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
     // private val inputImageViewModel: ImageViewModel by activityViewModels()
     // will need to let the ViewModel extend AndroidViewModel and pass application instead
     @Inject
+    @InputImageViewModel
     lateinit var inputImageViewModel: ImageViewModel
 
 
     // this view model only handles the merged result
     // Note injected, use vieModels() to bound with this Fragment
-    private val resultImageViewModel: ImageViewModel by viewModels()
+//    private val resultImageViewModel: ImageViewModel by viewModels()
+    @Inject
+    @ResultImageViewModel
+    lateinit var resultImageViewModel: ImageViewModel
 
     @Inject
     lateinit var styleTransferer: StyleTransferer
@@ -67,10 +74,9 @@ class AlchemyFragment : Fragment(), UriPickedListener, View.OnClickListener, Vie
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        //        DaggerPicAlchemyComponent.builder().tensorflowModule(TensorflowModule(requireContext())).
-        //            .build().inject(this)
         // Instead of creating a new component, access the activity scoped subcomponent from activity
-        (activity as AlchemyActivity).alchemoySubComponent.inject(this)
+        // no longer needed after hilt
+        // (activity as AlchemyActivity).alchemoySubComponent.inject(this)
 
         binding = FragmentAlchemyBinding.inflate(inflater)
 

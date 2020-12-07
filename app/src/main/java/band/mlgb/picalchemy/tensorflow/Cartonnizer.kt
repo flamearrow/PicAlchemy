@@ -7,6 +7,7 @@ import band.mlgb.picalchemy.utils.bitmapToUri
 import band.mlgb.picalchemy.utils.errBGLM
 import band.mlgb.picalchemy.utils.scaleBitmapAndKeepRatio
 import band.mlgb.picalchemy.utils.uriToBitmap
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.support.image.TensorImage
@@ -20,7 +21,7 @@ import javax.inject.Inject
  */
 
 class Cartonnizer @Inject constructor(
-    private val context: Context,
+    @ApplicationContext val context: Context,
     private val executorCoroutineDispatcher: ExecutorCoroutineDispatcher
 ) {
 

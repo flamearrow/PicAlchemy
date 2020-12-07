@@ -9,33 +9,39 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import band.mlgb.picalchemy.adapters.GalleryAdapter
 import band.mlgb.picalchemy.databinding.FragmentGalleryBinding
+import band.mlgb.picalchemy.inject.InputImageViewModel
 import band.mlgb.picalchemy.inject.ToyComplicatedClass
 import band.mlgb.picalchemy.utils.createInternalFileUri
 import band.mlgb.picalchemy.viewModels.GalleryViewModel
 import band.mlgb.picalchemy.viewModels.ImageViewModel
 import band.mlgb.picalchemy.viewModels.StyleListViewModel
 import band.mlgb.picalchemy.views.UriPickedListener
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class GalleryFragment : Fragment(), UriPickedListener {
     // safe arg plugin magic, equivalent to getArgments().getBoolean("paramName")
     private val args: GalleryFragmentArgs by navArgs()
 
     // live with the Fragment
-    private val galleryViewModel: GalleryViewModel by viewModels {
-        GalleryViewModel.providerFactory(requireActivity().contentResolver)
-    }
+    // private val galleryViewModel: GalleryViewModel by viewModels {
+    //    GalleryViewModel.providerFactory(requireActivity().contentResolver)
+    // }
+    // injected with @FragmentScope
+    @Inject
+    lateinit var galleryViewModel: GalleryViewModel
 
     // When injected, the ImageViewModel has @AciivityScope, which is bound with AlchemyActivity
     // This is essentially same with
     // private val inputImageViewModel: ImageViewModel by activityViewModels()
     // will need to let the ViewModel extend AndroidViewModel and pass application instead
     @Inject
+    @InputImageViewModel
     lateinit var inputImageViewModel: ImageViewModel
 
     // Similar to inputImageViewModel, this instance is also @ActivityScope, but it's injected
@@ -54,7 +60,8 @@ class GalleryFragment : Fragment(), UriPickedListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        (activity as AlchemyActivity).alchemoySubComponent.inject(this)
+        // no longer needed after hilt
+        // (activity as AlchemyActivity).alchemoySubComponent.inject(this)
 
         val binding = FragmentGalleryBinding.inflate(layoutInflater)
 
