@@ -22,6 +22,16 @@ suspend fun asyncTestNoDelay() = coroutineScope {
     println("${result.await()}")
 }
 
+
+/**
+ * Toy network API that takes time to run and return a value
+ */
+suspend fun netWorkApi(i: Int): Int = coroutineScope {
+    delay(1000)
+    println("mlgb: $i ")
+    return@coroutineScope i + 1
+}
+
 suspend fun toy1() = coroutineScope {
     delay(1000)
     println("mlgb")
@@ -32,6 +42,74 @@ suspend fun toy2() = coroutineScope {
     delay(1000)
     println("mlgb2")
 }
+
+suspend fun toy3() = coroutineScope {
+    delay(1000)
+    println("mlgb3")
+}
+
+suspend fun netWorkApiSequentialCallTests() {
+    val resultList = mutableListOf<Int>()
+
+    // sequential cal
+    for (i in 1..5) {
+        resultList.add(netWorkApi(i))
+    }
+
+    println("done with all results, resultListSize == ${resultList.size}")
+
+}
+
+suspend fun netWorkApiSequentialCallTests2() = coroutineScope {
+    val resultList = mutableListOf<Int>()
+    for (i in 1..5) {
+        withContext(Dispatchers.Default) {
+            resultList.add(netWorkApi(i))
+        }
+    }
+    println("done with all results, resultListSize == ${resultList.size}")
+}
+
+
+suspend fun netWorkApiAsynchronousCallTests() = coroutineScope {
+    val resultList = mutableListOf<Int>()
+
+    val deferredList = mutableListOf<Deferred<Int>>()
+    // async call cal
+    for (i in 1..5) {
+        deferredList.add(
+            async {
+                netWorkApi(i)
+            })
+    }
+    // wait all deferred to return
+    deferredList.forEach {
+        resultList.add(it.await())
+    }
+
+    println("done with all results, resultListSize == ${resultList.size}")
+
+}
+
+
+suspend fun netWorkApiAsynchronousCallTests2() = coroutineScope {
+    val resultList = mutableListOf<Int>()
+
+    val jobList = mutableListOf<Job>()
+    for (i in 1..5) {
+        launch {
+            resultList.add(netWorkApi(i))
+        }.also { jobList.add(it) }
+    }
+
+    jobList.forEach {
+        it.join()
+    }
+
+    println("done with all results, resultListSize == ${resultList.size}")
+
+}
+
 
 suspend fun main(): Unit = runBlocking {// root coroutine
 //    launch { // sub coroutine1
@@ -45,15 +123,44 @@ suspend fun main(): Unit = runBlocking {// root coroutine
 //    asyncTestDelay() // will suspend root and let root's scope to execute other root sibling coroutine if any, essentially asyncTestNoDelay() will need to wait until this gets finished
 //    asyncTestNoDelay()
 
-    withContext(Dispatchers.Default) {
+//    withContext(Dispatchers.Default) {
+//
+//        toy1()
+//    }
+//
+//    withContext(Dispatchers.Default) {
+//
+//        toy2()
+//    }
+//    netWorkApiSequentialCallTests()
+    netWorkApiSequentialCallTests2()
+//    netWorkApiAsynchronousCallTests()
+//    netWorkApiAsynchronousCallTests2()
 
-        toy1()
-    }
 
-    withContext(Dispatchers.Default) {
-
-        toy2()
-    }
+//    val deferred1 = async {
+//        toy(1)
+//    }
+//
+//    val deferred2 = async {
+//        toy(2)
+//    }
+//
+//    val job1 = launch {
+//        toy(1)
+//    }
+//
+//
+//    val job2 = launch {
+//        toy(2)
+//    }
+//
+////    job1.join()
+////    job2.join()
+//    deferred1.await()
+//    deferred2.await()
+//
+//    toy(3)
 //    testTwoJobs(this)
 //    testAsync()
 //    val job1 = launch {
