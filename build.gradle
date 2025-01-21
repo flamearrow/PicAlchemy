@@ -1,22 +1,24 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-        kotlin_version = "1.4.10"
+        kotlin_version = '1.9.22'
         lifecycleVersion = "2.2.0"
         appCompatVersion = "1.2.0"
         glideVersion = '4.11.0'
-        tfl_version = "0.0.0-nightly"
-//        tfl_version = "2.2.0"
-        hilt_version = "2.29.1-alpha"
-        nav_version = "2.3.1"
+//        tfl_version = "0.0.0-nightly"
+        tfl_version = "2.13.0"
+        tfl_support_version = "0.4.4"
+        hilt_version = '2.50'
+        nav_version = '2.8.5'
     }
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+//        jcenter()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.1"
+        classpath 'com.android.tools.build:gradle:8.8.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
         // used for safe args passed during navigation
@@ -27,7 +29,8 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+//        jcenter()
     }
 }
 

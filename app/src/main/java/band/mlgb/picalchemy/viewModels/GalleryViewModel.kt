@@ -72,10 +72,9 @@ class GalleryViewModel @Inject constructor(private val contentResolver: ContentR
             contentResolver: ContentResolver
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return GalleryViewModel(contentResolver) as T
             }
-
         }
 
     }

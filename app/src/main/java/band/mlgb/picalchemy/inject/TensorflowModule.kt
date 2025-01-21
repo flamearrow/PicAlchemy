@@ -3,14 +3,14 @@ package band.mlgb.picalchemy.inject
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.newSingleThreadContext
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 class TensorflowModule {
 
     @ObsoleteCoroutinesApi
