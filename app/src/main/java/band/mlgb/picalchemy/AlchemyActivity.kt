@@ -2,8 +2,10 @@ package band.mlgb.picalchemy
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -26,11 +28,17 @@ class AlchemyActivity : AppCompatActivity() {
         checkAndRequestForPermission()
     }
 
+    private fun mediaPermission() =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_IMAGES
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
 
     private fun requestRequiredPermissions() {
         ActivityCompat.requestPermissions(
             this,
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+            arrayOf(mediaPermission()),
             PERMISSION_REQUEST_CODE
         )
     }
@@ -38,13 +46,13 @@ class AlchemyActivity : AppCompatActivity() {
     private fun checkAndRequestForPermission() {
         if (ContextCompat.checkSelfPermission(
                 this,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                mediaPermission()
             ) == PackageManager.PERMISSION_DENIED
         ) {
             // This returns true if user ever chosen 'deny and never ask again'
             if (ActivityCompat.shouldShowRequestPermissionRationale(
                     this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
+                    mediaPermission()
                 )
             ) {
                 showPermissionRationale()
