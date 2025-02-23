@@ -21,7 +21,7 @@ PicAlchemy utilizes the advanced [arbitrary-image-stylization-v1 transformer mod
 
 ## Download Now
 
-Ready to reimagine your photos? [Download PicAlchemy on Google Play]([https://apps.apple.com/us/app/picalchemy/id6741768666](https://play.google.com/store/apps/details?id=band.mlgb.picalchemy)) and start creating your own digital masterpieces today!
+Ready to reimagine your photos? [Download PicAlchemy on Google Play](https://play.google.com/store/apps/details?id=band.mlgb.picalchemy) and start creating your own digital masterpieces today!
 
 ---
 
