@@ -19,6 +19,10 @@ PicAlchemy utilizes the advanced [arbitrary-image-stylization-v1 transformer mod
 2. **Choose a Style:** Pick from an array of curated art styles to suit your creative vision.
 3. **Transform & Share:** Watch as your photo is magically transformed, then save or share your new artwork with friends and family!
 
+## Download Now
+
+Ready to reimagine your photos? [Download PicAlchemy on Google Play]([https://apps.apple.com/us/app/picalchemy/id6741768666](https://play.google.com/store/apps/details?id=band.mlgb.picalchemy)) and start creating your own digital masterpieces today!
+
 ---
 
 *Powered by cutting-edge machine learning and the performance of LiteRT, PicAlchemy is your gateway to a world where technology meets art.*
