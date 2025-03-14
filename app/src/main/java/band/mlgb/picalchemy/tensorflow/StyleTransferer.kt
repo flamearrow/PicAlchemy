@@ -22,16 +22,18 @@ class StyleTransferer @Inject constructor(
     private val interpreterTransform: Interpreter
 
     init {
-        interpreterPredict = getInterpreter(context, STYLE_PREDICT_INT8_MODEL)
-        interpreterTransform = getInterpreter(context, STYLE_TRANSFER_INT8_MODEL)
+        interpreterPredict = getInterpreter(context, STYLE_PREDICT_FP16_MODEL)
+        interpreterTransform = getInterpreter(context, STYLE_TRANSFER_FP16_MODEL)
     }
 
     companion object {
         private const val STYLE_IMAGE_SIZE = 256
         private const val CONTENT_IMAGE_SIZE = 384
         private const val BOTTLENECK_SIZE = 100
-        private const val STYLE_PREDICT_INT8_MODEL = "style_predict_quantized_256.tflite"
-        private const val STYLE_TRANSFER_INT8_MODEL = "style_transfer_quantized_384.tflite"
+        private const val STYLE_PREDICT_FP16_MODEL =
+            "arbitrary-image-stylization-v1-tflite-256-fp16-prediction.tflite"
+        private const val STYLE_TRANSFER_FP16_MODEL =
+            "arbitrary-image-stylization-v1-tflite-256-fp16-transfer.tflite"
     }
 
     suspend fun transferStyle(
@@ -84,5 +86,4 @@ class StyleTransferer @Inject constructor(
         interpreterPredict.close()
         interpreterTransform.close()
     }
-
 }
