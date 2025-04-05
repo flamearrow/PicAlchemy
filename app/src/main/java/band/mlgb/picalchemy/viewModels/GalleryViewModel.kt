@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 // ViewModel using ContentProvider to access local images
 // use a suspend function to load from content provider and cursor
+@Deprecated("This is for traditional view")
 @FragmentScoped
 class GalleryViewModel @Inject constructor(private val contentResolver: ContentResolver) :
     ViewModel() {

@@ -5,13 +5,15 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import band.mlgb.picalchemy.databinding.ActivityEntryBinding
+import band.mlgb.picalchemy.views.AlchemyScaffold
+import band.mlgb.picalchemy.views.theme.PicAlchemyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -62,7 +64,12 @@ class AlchemyActivity : AppCompatActivity() {
         } else {
             // Different ways to data binding
             // setContentView(ActivityEntryBinding.inflate(layoutInflater).root)
-            DataBindingUtil.setContentView<ActivityEntryBinding>(this, R.layout.activity_entry)
+//            DataBindingUtil.setContentView<ActivityEntryBinding>(this, R.layout.activity_entry)
+            setContent {
+                PicAlchemyTheme {
+                    AlchemyScaffold()
+                }
+            }
         }
     }
 

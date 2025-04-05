@@ -96,4 +96,11 @@ dependencies {
     implementation libs.compose.material3
     implementation libs.compose.activity
     debugImplementation libs.compose.ui.tooling
+    
+    // Compose Navigation
+    implementation libs.compose.hilt.navigation
+
+    // coil
+    implementation(libs.coil.kt)
+    implementation(libs.coil.kt.compose)
 }
