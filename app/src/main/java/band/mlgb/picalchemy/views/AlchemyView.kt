@@ -192,7 +192,7 @@ private fun rememberResultSwitchButtonState(): ResultSwitchButtonState {
     }
     val isPressed by interactionSource.collectIsPressedAsState()
     return remember(isPressed) {
-        ResultSwitchButtonState(isPressed, interactionSource)
+        ResultSwitchButtonState(!isPressed, interactionSource)
     }
 }
 
@@ -229,44 +229,64 @@ fun AlchemyHeader(state: AlchemyState, shouldShowResult: Boolean) {
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .padding(10.dp)
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
 
     ) {
-        if (LocalInspectionMode.current) {
-            Image(
-                modifier = Modifier.clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop,
-                painter = painterResource(R.drawable.tora),
-                contentDescription = "Source image"
-            )
-        } else {
-            when (state) {
-                is AlchemyState.Idle -> {
+        when (state) {
+            is AlchemyState.Idle -> {
+                if (LocalInspectionMode.current) {
+                    Image(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop,
+                        painter = painterResource(R.drawable.tora),
+                        contentDescription = "Source image"
+                    )
+                } else {
                     AsyncImage(
-                        modifier = Modifier.clip(RoundedCornerShape(8.dp)),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(8.dp)),
                         contentScale = ContentScale.Crop,
                         model = state.srcUri,
                         contentDescription = "Source Image"
                     )
                 }
+            }
 
-                is AlchemyState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.clip(RoundedCornerShape(8.dp))
+            is AlchemyState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                )
+            }
+
+            is AlchemyState.Success -> {
+                if (LocalInspectionMode.current) {
+                    Image(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop,
+                        painter = painterResource(R.drawable.tora),
+                        contentDescription = "Source image"
                     )
-                }
-
-                is AlchemyState.Success -> {
+                } else {
                     if (shouldShowResult) {
                         AsyncImage(
-                            modifier = Modifier.clip(RoundedCornerShape(8.dp)),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(8.dp)),
                             contentScale = ContentScale.Crop,
                             model = state.resultUri,
                             contentDescription = "result Image"
                         )
                     } else {
                         AsyncImage(
-                            modifier = Modifier.clip(RoundedCornerShape(8.dp)),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(8.dp)),
                             contentScale = ContentScale.Crop,
                             model = state.srcUri,
                             contentDescription = "Source Image"
@@ -287,6 +307,23 @@ fun AlchemyPreviewIdle() {
             AlchemyContent(
                 AlchemyState.Idle(
                     Uri.EMPTY,
+                    mutableListOf<Uri>().also { list ->
+                        repeat(16) {
+                            list.add(Uri.EMPTY)
+                        }
+                    }
+                ), {}, {}, {})
+        }
+    }
+}
+
+@Preview
+@Composable
+fun AlchemyPreviewLoading() {
+    PicAlchemyTheme {
+        Surface {
+            AlchemyContent(
+                AlchemyState.Loading(
                     mutableListOf<Uri>().also { list ->
                         repeat(16) {
                             list.add(Uri.EMPTY)
