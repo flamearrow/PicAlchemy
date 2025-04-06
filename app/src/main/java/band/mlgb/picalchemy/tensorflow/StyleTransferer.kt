@@ -13,11 +13,13 @@ import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.Interpreter
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Execute the style transferring tensorflow model with a dedicated single thread dispatcher
  * https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2
  */
+@Singleton
 class StyleTransferer @Inject constructor(
     @ApplicationContext private val context: Context,
     private val executorCoroutineDispatcher: ExecutorCoroutineDispatcher

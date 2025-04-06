@@ -62,16 +62,19 @@ fun AlchemyView() {
 
     AlchemyContent(state, onStyleSelected = { styleUri ->
         vm.selectStyle(styleUri)
-    }, onSave = {
-        vm.save()
-    }, onShare = {
-        vm.share()
+    }, onSave = { resultUri ->
+        vm.save(resultUri)
+    }, onShare = { resultUri ->
+        vm.share(resultUri)
     })
 }
 
 @Composable
 fun AlchemyContent(
-    state: AlchemyState, onStyleSelected: (Uri) -> Unit, onSave: () -> Unit, onShare: () -> Unit
+    state: AlchemyState,
+    onStyleSelected: (Uri) -> Unit,
+    onSave: (Uri) -> Unit,
+    onShare: (Uri) -> Unit
 ) {
     val resultSwitchButtonState = rememberResultSwitchButtonState()
 
@@ -86,7 +89,9 @@ fun AlchemyContent(
             RoundButton(
                 icon = R.drawable.ic_save_alt_white_24dp,
                 contentDescription = "Save",
-                onClick = onSave,
+                onClick = {
+                    onSave((state as AlchemyState.Success).resultUri)
+                },
                 enabled = state is AlchemyState.Success
             )
 
@@ -98,7 +103,9 @@ fun AlchemyContent(
             RoundButton(
                 icon = R.drawable.ic_share_white_24dp,
                 contentDescription = "Share",
-                onClick = onShare,
+                onClick = {
+                    onShare((state as AlchemyState.Success).resultUri)
+                },
                 enabled = state is AlchemyState.Success
             )
         }
