@@ -8,10 +8,14 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import band.mlgb.picalchemy.databinding.ActivityEntryBinding
+import band.mlgb.picalchemy.utils.ActivityPhotoTaker
+import band.mlgb.picalchemy.utils.LocalPhotoTaker
+import band.mlgb.picalchemy.utils.PhotoTaker
 import band.mlgb.picalchemy.views.AlchemyScaffold
 import band.mlgb.picalchemy.views.theme.PicAlchemyTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,12 +26,18 @@ class AlchemyActivity : AppCompatActivity() {
     // no longer needed after hilt
     // lateinit var alchemoySubComponent: AlchemySubComponent
 
+    lateinit var photoTaker: PhotoTaker
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Register before onResume
+        photoTaker = ActivityPhotoTaker(this)
+
         // no longer needed after hilt
         // alchemoySubComponent =
         //    (application as PicAlchemyApp).appComponent.alchemyComponentFactory().create()
         checkAndRequestForPermission()
+
     }
 
     private fun mediaPermission() =
@@ -67,7 +77,11 @@ class AlchemyActivity : AppCompatActivity() {
 //            DataBindingUtil.setContentView<ActivityEntryBinding>(this, R.layout.activity_entry)
             setContent {
                 PicAlchemyTheme {
-                    AlchemyScaffold()
+                    CompositionLocalProvider(
+                        LocalPhotoTaker provides photoTaker
+                    ) {
+                        AlchemyScaffold()
+                    }
                 }
             }
         }

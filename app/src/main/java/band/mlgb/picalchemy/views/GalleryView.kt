@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,13 +35,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import band.mlgb.picalchemy.R
+import band.mlgb.picalchemy.utils.LocalPhotoTaker
+import band.mlgb.picalchemy.utils.TakePhotoState
 import band.mlgb.picalchemy.viewModels.GalleryComposeViewModel
 import band.mlgb.picalchemy.views.theme.PicAlchemyTheme
 import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 
 sealed interface GalleryState {
-    object Loading : GalleryState
+    data object Loading : GalleryState
     data class Loaded(val images: List<Uri>) : GalleryState
+    data class Error(val error: Throwable) : GalleryState
 }
 
 @Composable
@@ -48,12 +53,37 @@ fun GalleryView(navController: NavController) {
     val vm: GalleryComposeViewModel = hiltViewModel()
 
     val state by vm.galleryState.collectAsState()
+
+    val localPhotoTaker = LocalPhotoTaker.current
+
+    val coroutineScope = rememberCoroutineScope()
+
     GalleryContent(
         state,
         onImageSelected = {
             navController.navigateToAlchemy(it)
-        }, onCameraButtonPressed = {
-            vm.takePicture()
+        },
+        onCameraButtonPressed = {
+            coroutineScope.launch {
+                when (val takePhotoState = localPhotoTaker.takePhoto()) {
+                    TakePhotoState.Cancelled -> {
+                        // Do nothing
+                    }
+
+                    is TakePhotoState.Error -> {
+                        vm.onError(takePhotoState.error)
+                    }
+
+                    is TakePhotoState.Success -> {
+                        vm.onLoading()
+                        navController.navigateToAlchemy(takePhotoState.uri)
+                        vm.reset()
+                    }
+                }
+            }
+        },
+        onRetry = {
+            vm.reset()
         }
     )
 }
@@ -62,7 +92,8 @@ fun GalleryView(navController: NavController) {
 fun GalleryContent(
     state: GalleryState,
     onImageSelected: (Uri) -> Unit,
-    onCameraButtonPressed: () -> Unit
+    onCameraButtonPressed: () -> Unit,
+    onRetry: () -> Unit
 ) {
     when (state) {
         is GalleryState.Loading -> {
@@ -116,11 +147,19 @@ fun GalleryContent(
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Icon(
-                        modifier = Modifier.fillMaxSize().padding(18.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(18.dp),
                         painter = painterResource(R.drawable.ic_photo_camera_white_24dp),
                         contentDescription = "Camera button"
                     )
                 }
+            }
+        }
+
+        is GalleryState.Error -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                ErrorScreen(state.error, onRetry)
             }
         }
     }
@@ -142,8 +181,10 @@ fun GalleryViewPreviewLoaded() {
                         Uri.EMPTY,
                     )
                 ),
+                {},
+                {},
                 {}
-            ) {}
+            )
         }
     }
 }
