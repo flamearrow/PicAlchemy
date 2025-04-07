@@ -1,6 +1,8 @@
 package band.mlgb.picalchemy.views
 
 import android.net.Uri
+import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,9 +34,11 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import band.mlgb.picalchemy.R
+import band.mlgb.picalchemy.adapters.bindGalleryImage
 import band.mlgb.picalchemy.utils.LocalPhotoTaker
 import band.mlgb.picalchemy.utils.TakePhotoState
 import band.mlgb.picalchemy.viewModels.GalleryComposeViewModel
@@ -133,6 +137,10 @@ fun GalleryContent(
                                     .clickable { onImageSelected(uri) },
                                 contentScale = ContentScale.Crop
                             )
+//                            GalleryItem(
+//                                uri = uri,
+//                                onImageSelected = onImageSelected
+//                            )
                         }
                     }
                 }
@@ -165,6 +173,36 @@ fun GalleryContent(
     }
 }
 
+@Composable
+fun GalleryItem(
+    uri: Uri,
+    onImageSelected: (Uri) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .aspectRatio(1f)
+            .clip(RoundedCornerShape(6.dp))
+            .clickable { onImageSelected(uri) }
+    ) {
+        AndroidView(
+            factory = { ctx ->
+                ImageView(ctx).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                    contentDescription = null
+                }
+            },
+            modifier = Modifier.fillMaxSize(),
+            update = { imageView ->
+                // Use a coroutine to ensure loading happens off the main thread
+                bindGalleryImage(imageView, uri)
+            }
+        )
+    }
+}
 
 @Preview
 @Composable
